@@ -1,0 +1,27 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# pnpm 10 blocks dependency lifecycle scripts unless explicitly allowed.
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@swc/core'
+  - esbuild
+  - prisma
+  - sharp
+  - unrs-resolver
+
+# Optional/telemetry install scripts we deliberately do not run.
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - '@scarf/scarf'
+  - msgpackr-extract
+
+# Security overrides for transitive dependencies with published advisories (see docs/SECURITY.md).
+# Remove an entry once the parent package ships the fix.
+overrides:
+  multer: '>=2.5.0'
+  js-yaml@>=5.0.0 <5.4.1: '>=5.4.1'
+  deepmerge-ts: '>=8.0.0'

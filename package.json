@@ -1,0 +1,41 @@
+{
+  "name": "nutrirace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NutriRace — social diet planning and healthy-habit tracking platform (monorepo).",
+  "packageManager": "pnpm@10.34.9",
+  "engines": {
+    "node": ">=22.12.0",
+    "pnpm": ">=10.0.0"
+  },
+  "prettier": "@nutrirace/config/prettier",
+  "scripts": {
+    "setup": "pnpm install --frozen-lockfile && pnpm prep",
+    "prep": "pnpm build:shared && pnpm db:generate",
+    "build:shared": "pnpm --filter @nutrirace/shared build",
+    "dev": "pnpm prep && pnpm --parallel --filter @nutrirace/web --filter @nutrirace/api --filter @nutrirace/worker dev",
+    "dev:web": "pnpm --filter @nutrirace/web dev",
+    "dev:api": "pnpm build:shared && pnpm --filter @nutrirace/api dev",
+    "dev:worker": "pnpm build:shared && pnpm --filter @nutrirace/worker dev",
+    "infra:up": "docker compose up -d --wait redis",
+    "infra:down": "docker compose down",
+    "infra:logs": "docker compose logs -f redis",
+    "db:generate": "pnpm --filter @nutrirace/api db:generate",
+    "db:seed": "pnpm --filter @nutrirace/api db:seed",
+    "lint": "pnpm prep && pnpm -r --workspace-concurrency=1 lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm prep && pnpm -r --workspace-concurrency=1 typecheck",
+    "test": "pnpm prep && pnpm -r --workspace-concurrency=1 test",
+    "test:api": "pnpm prep && pnpm --filter @nutrirace/api test:api",
+    "test:integration": "pnpm prep && pnpm --filter @nutrirace/api test:integration && pnpm --filter @nutrirace/worker test:integration",
+    "test:e2e": "pnpm --filter @nutrirace/web build && pnpm --filter @nutrirace/web test:e2e",
+    "build": "pnpm prep && pnpm -r --workspace-concurrency=1 build",
+    "audit:prod": "pnpm audit --prod --audit-level=high"
+  },
+  "devDependencies": {
+    "@nutrirace/config": "workspace:*",
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.3"
+  }
+}

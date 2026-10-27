@@ -1,0 +1,21 @@
+// Single Prisma schema for the whole platform. Owned by apps/api (the only app that talks to
+// MongoDB); the worker and web never import Prisma. Phase 2+ extends this via additive models.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+/// Key/value metadata about the platform itself (schema phase, seed version).
+model SystemMetadata {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_metadata")
+}

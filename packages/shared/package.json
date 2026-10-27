@@ -1,0 +1,30 @@
+{
+  "name": "@nutrirace/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared types, environment loading and logging utilities for NutriRace Node.js apps.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "dependencies": {
+    "pino": "^10.0.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@nutrirace/config": "workspace:*",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.10.0",
+    "eslint": "^10.0.0",
+    "jest": "^30.0.0",
+    "ts-jest": "^29.4.0",
+    "typescript": "~5.9.3"
+  }
+}

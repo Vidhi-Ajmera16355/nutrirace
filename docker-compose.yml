@@ -1,0 +1,61 @@
+# Local development infrastructure. Application containers are opt-in via the
+# "apps" profile:  docker compose --profile apps up --build
+name: nutrirace
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # AOF persistence so BullMQ jobs survive local restarts.
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '127.0.0.1:6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  api:
+    profiles: ['apps']
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      API_PORT: '4000'
+      FRONTEND_URL: ${FRONTEND_URL:?Set FRONTEND_URL}
+      BACKEND_URL: ${BACKEND_URL:?Set BACKEND_URL}
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      REDIS_URL: redis://redis:6379
+      AUTH_SECRET: ${AUTH_SECRET:?Set AUTH_SECRET}
+    ports:
+      - '4000:4000'
+    depends_on:
+      redis: { condition: service_healthy }
+
+  worker:
+    profiles: ['apps']
+    build: { context: ., dockerfile: apps/worker/Dockerfile }
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      REDIS_URL: redis://redis:6379
+      WORKER_HEALTH_PORT: '4001'
+    depends_on:
+      redis: { condition: service_healthy }
+
+  web:
+    profiles: ['apps']
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000/api/v1}
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+
+volumes:
+  redis_data:

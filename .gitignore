@@ -1,0 +1,21 @@
+node_modules/
+dist/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+.turbo/
+*.tsbuildinfo
+.DS_Store
+
+# Environment files: only the example is committed.
+.env
+.env.*
+!.env.example
+
+# Logs and editors
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json
